@@ -72,6 +72,25 @@ test('TC-BN-07 Iniciar só habilita com os 4 navios', async () => {
   expect(screen.getByTestId('btn-iniciar')).toBeEnabled();
 });
 
+test('TC-BN-20 navio vertical que sairia por baixo é recusado', async () => {
+  const user = await abrirJogo();
+  await user.click(screen.getByTestId('navio-E'));
+  await user.click(screen.getByTestId('btn-girar')); // vertical
+  await user.click(casa('jogador', 'A8')); // A8–A11: não existe linha 11
+  expect(casasNoEstado('jogador', 'agua')).toHaveLength(100);
+  expect(screen.getByTestId('mensagem')).toHaveTextContent(/inválida/i);
+  expect(screen.getByTestId('navio-E')).toBeInTheDocument();
+});
+
+test('TC-BN-20 navio vertical encostado na borda de baixo é aceito', async () => {
+  const user = await abrirJogo();
+  await user.click(screen.getByTestId('navio-E'));
+  await user.click(screen.getByTestId('btn-girar')); // vertical
+  await user.click(casa('jogador', 'A7')); // A7–A10: cabe exatamente
+  for (const c of ['A7', 'A8', 'A9', 'A10']) expect(casa('jogador', c)).toHaveAttribute('data-estado', 'navio');
+  expect(screen.queryByTestId('navio-E')).toBeNull();
+});
+
 test('TC-BN-05 navio que sairia do tabuleiro é recusado', async () => {
   const user = await abrirJogo();
   await posicionar(user, 'P', 'H1'); // horizontal: precisaria de H1 até L1
