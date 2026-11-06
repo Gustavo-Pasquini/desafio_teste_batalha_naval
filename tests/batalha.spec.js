@@ -9,14 +9,14 @@ test('TC-BN-10 tiro na água', async () => {
   const user = await abrirJogo(CENARIO);
   await user.click(casa('inimigo', 'J10'));
   expect(casa('inimigo', 'J10')).toHaveAttribute('data-estado', 'erro');
-  expect(screen.getByTestId('mensagem')).toHaveTextContent('Água');
+  expect(screen.getByTestId('mensagem')).toHaveTextContent(/^Água$/);
 });
 
 test('TC-BN-11 tiro acerta um navio', async () => {
   const user = await abrirJogo(CENARIO);
   await user.click(casa('inimigo', 'A1'));
   expect(casa('inimigo', 'A1')).toHaveAttribute('data-estado', 'acerto');
-  expect(screen.getByTestId('mensagem')).toHaveTextContent('Fogo!');
+  expect(screen.getByTestId('mensagem')).toHaveTextContent(/^Fogo!$/);
 });
 
 test('TC-BN-12 repetir tiro não consome outro turno', async () => {
@@ -31,8 +31,7 @@ test('TC-BN-24 não permite atirar durante o posicionamento', async () => {
   const user = await abrirJogo();
   await user.click(casa('inimigo', 'A1'));
   expect(casa('inimigo', 'A1')).toHaveAttribute('data-estado', 'desconhecido');
-  expect(casasNoEstado('jogador', 'acerto')).toHaveLength(0);
-  expect(casasNoEstado('jogador', 'erro')).toHaveLength(0);
+  expect(casasNoEstado('jogador', 'agua')).toHaveLength(100); // nenhuma casa do jogador mudou
 });
 
 test('TC-BN-13 afunda o destroier e reduz os restantes', async () => {
@@ -40,7 +39,7 @@ test('TC-BN-13 afunda o destroier e reduz os restantes', async () => {
   await user.click(casa('inimigo', 'A7'));
   await user.click(casa('inimigo', 'B7'));
   for (const coord of ['A7', 'B7']) expect(casa('inimigo', coord)).toHaveAttribute('data-estado', 'afundado');
-  expect(screen.getByTestId('mensagem')).toHaveTextContent('Você afundou o Destroier');
+  expect(screen.getByTestId('mensagem')).toHaveTextContent(/^Você afundou o Destroier$/);
   expect(screen.getByTestId('restantes-inimigo')).toHaveTextContent(/^3$/);
 });
 
@@ -53,7 +52,7 @@ test.each([
   const user = await abrirJogo(CENARIO);
   for (const coord of coordenadas) await user.click(casa('inimigo', coord));
   for (const coord of coordenadas) expect(casa('inimigo', coord)).toHaveAttribute('data-estado', 'afundado');
-  expect(screen.getByTestId('mensagem')).toHaveTextContent(`Você afundou o ${nome}`);
+  expect(screen.getByTestId('mensagem')).toHaveTextContent(new RegExp(`^Você afundou o ${nome}$`));
   expect(screen.getByTestId('restantes-inimigo')).toHaveTextContent(/^3$/);
 });
 
@@ -66,12 +65,15 @@ test('TC-BN-14 computador atira na ordem configurada', async () => {
 
 test('TC-BN-15 computador não repete tiros aleatórios', async () => {
   const user = await abrirJogo({ jogador: FROTA_PADRAO, inimigo: FROTA_PADRAO });
-  for (const coord of TODAS_AS_CASAS.slice(0, 40)) {
-    if (/venceu|perdeu/i.test(screen.getByTestId('mensagem').textContent)) break;
+  let jogadas = 0;
+  for (const coord of TODAS_AS_CASAS.slice(0, 40)) { // A1–D10: o jogador não consegue vencer antes
+    if (/venceu|perdeu/i.test(screen.getByTestId('mensagem').textContent)) break; // o computador pode vencer antes
     await user.click(casa('inimigo', coord));
+    jogadas++;
   }
-  const tiros = casasNoEstado('jogador', 'acerto').length + casasNoEstado('jogador', 'erro').length;
-  expect(tiros).toBe(40);
+  const atingidas = ['acerto', 'erro', 'afundado'].reduce((n, estado) => n + casasNoEstado('jogador', estado).length, 0);
+  expect(jogadas).toBeGreaterThan(0);
+  expect(atingidas).toBe(jogadas); // um tiro do computador por jogada, sempre numa casa nova
 });
 
 test('TC-BN-23 computador joga mesmo após acerto do jogador', async () => {
