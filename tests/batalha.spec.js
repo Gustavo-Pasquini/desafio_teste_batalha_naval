@@ -16,7 +16,7 @@ test('TC-BN-11 tiro acerta um navio', async () => {
   const user = await abrirJogo(CENARIO);
   await user.click(casa('inimigo', 'A1'));
   expect(casa('inimigo', 'A1')).toHaveAttribute('data-estado', 'acerto');
-  expect(screen.getByTestId('mensagem')).toHaveTextContent('Fogo!');
+  expect(screen.getByTestId('mensagem')).toHaveTextContent(/^Fogo!$/);
 });
 
 test('TC-BN-12 repetir tiro não consome outro turno', async () => {
