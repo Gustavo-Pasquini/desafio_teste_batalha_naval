@@ -40,3 +40,11 @@ test('TC-BN-09 navios do inimigo ficam escondidos', async () => {
   await user.click(casa('inimigo', 'A1'));
   expect(casa('inimigo', 'A1')).toHaveAttribute('data-estado', 'acerto'); // o navio estava lá, escondido
 });
+
+test('TC-BN-03 porta-aviões na horizontal ocupa A1 a E1', async () => {
+  const user = await abrirJogo();
+  await posicionar(user, 'P', 'A1');
+  for (const c of ['A1', 'B1', 'C1', 'D1', 'E1']) expect(casa('jogador', c)).toHaveAttribute('data-estado', 'navio');
+  expect(casa('jogador', 'F1')).toHaveAttribute('data-estado', 'agua');
+  expect(screen.queryByTestId('navio-P')).toBeNull(); // saiu da lista
+});
