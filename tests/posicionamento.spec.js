@@ -71,3 +71,11 @@ test('TC-BN-07 Iniciar só habilita com os 4 navios', async () => {
   expect(casasNoEstado('jogador', 'navio')).toHaveLength(14);
   expect(screen.getByTestId('btn-iniciar')).toBeEnabled();
 });
+
+test('TC-BN-05 navio que sairia do tabuleiro é recusado', async () => {
+  const user = await abrirJogo();
+  await posicionar(user, 'P', 'H1'); // horizontal: precisaria de H1 até L1
+  expect(casasNoEstado('jogador', 'agua')).toHaveLength(100);
+  expect(screen.getByTestId('mensagem')).toHaveTextContent(/inválida/i);
+  expect(screen.getByTestId('navio-P')).toBeInTheDocument();
+});
