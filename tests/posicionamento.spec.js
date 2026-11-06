@@ -79,3 +79,15 @@ test('TC-BN-05 navio que sairia do tabuleiro é recusado', async () => {
   expect(screen.getByTestId('mensagem')).toHaveTextContent(/inválida/i);
   expect(screen.getByTestId('navio-P')).toBeInTheDocument();
 });
+
+test('TC-BN-06 navio sobreposto é recusado', async () => {
+  const user = await abrirJogo();
+  await posicionar(user, 'P', 'A1'); // A1–E1
+  await user.click(screen.getByTestId('navio-E'));
+  await user.click(screen.getByTestId('btn-girar')); // vertical
+  await user.click(casa('jogador', 'C1')); // C1–C4 cruzaria o porta-aviões em C1
+  expect(casasNoEstado('jogador', 'navio')).toHaveLength(5);
+  for (const c of ['C2', 'C3', 'C4']) expect(casa('jogador', c)).toHaveAttribute('data-estado', 'agua');
+  expect(screen.getByTestId('mensagem')).toHaveTextContent(/inválida/i);
+  expect(screen.getByTestId('navio-E')).toBeInTheDocument();
+});
