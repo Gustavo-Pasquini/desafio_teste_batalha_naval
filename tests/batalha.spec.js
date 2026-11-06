@@ -31,8 +31,7 @@ test('TC-BN-24 não permite atirar durante o posicionamento', async () => {
   const user = await abrirJogo();
   await user.click(casa('inimigo', 'A1'));
   expect(casa('inimigo', 'A1')).toHaveAttribute('data-estado', 'desconhecido');
-  expect(casasNoEstado('jogador', 'acerto')).toHaveLength(0);
-  expect(casasNoEstado('jogador', 'erro')).toHaveLength(0);
+  expect(casasNoEstado('jogador', 'agua')).toHaveLength(100); // nenhuma casa do jogador mudou
 });
 
 test('TC-BN-13 afunda o destroier e reduz os restantes', async () => {
