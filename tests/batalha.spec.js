@@ -65,12 +65,15 @@ test('TC-BN-14 computador atira na ordem configurada', async () => {
 
 test('TC-BN-15 computador não repete tiros aleatórios', async () => {
   const user = await abrirJogo({ jogador: FROTA_PADRAO, inimigo: FROTA_PADRAO });
-  for (const coord of TODAS_AS_CASAS.slice(0, 40)) {
-    if (/venceu|perdeu/i.test(screen.getByTestId('mensagem').textContent)) break;
+  let jogadas = 0;
+  for (const coord of TODAS_AS_CASAS.slice(0, 40)) { // A1–D10: o jogador não consegue vencer antes
+    if (/venceu|perdeu/i.test(screen.getByTestId('mensagem').textContent)) break; // o computador pode vencer antes
     await user.click(casa('inimigo', coord));
+    jogadas++;
   }
-  const tiros = casasNoEstado('jogador', 'acerto').length + casasNoEstado('jogador', 'erro').length;
-  expect(tiros).toBe(40);
+  const atingidas = ['acerto', 'erro', 'afundado'].reduce((n, estado) => n + casasNoEstado('jogador', estado).length, 0);
+  expect(jogadas).toBeGreaterThan(0);
+  expect(atingidas).toBe(jogadas); // um tiro do computador por jogada, sempre numa casa nova
 });
 
 test('TC-BN-23 computador joga mesmo após acerto do jogador', async () => {
