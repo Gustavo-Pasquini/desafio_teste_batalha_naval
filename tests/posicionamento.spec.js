@@ -18,3 +18,13 @@ test('TC-BN-01 dois tabuleiros 10 × 10 com rótulos A–J e 1–10', async () =
     for (let n = 1; n <= 10; n++) expect(tabuleiro.getAllByText(String(n), { exact: true }).length).toBeGreaterThan(0);
   }
 });
+
+test('TC-BN-02 lista da frota com os tamanhos e Iniciar desabilitado', async () => {
+  await abrirJogo();
+  const tamanhos = { P: '5', E: '4', S: '3', D: '2' };
+  for (const [navio, tamanho] of Object.entries(tamanhos)) {
+    expect(screen.getByTestId(`navio-${navio}`)).toBeVisible();
+    expect(screen.getByTestId(`navio-${navio}`)).toHaveTextContent(tamanho);
+  }
+  expect(screen.getByTestId('btn-iniciar')).toBeDisabled();
+});
