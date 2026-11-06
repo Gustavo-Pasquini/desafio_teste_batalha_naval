@@ -73,3 +73,11 @@ test('TC-BN-15 computador não repete tiros aleatórios', async () => {
   const tiros = casasNoEstado('jogador', 'acerto').length + casasNoEstado('jogador', 'erro').length;
   expect(tiros).toBe(40);
 });
+
+test('TC-BN-23 computador joga mesmo após acerto do jogador', async () => {
+  const user = await abrirJogo({ ...CENARIO, tiroscpu: 'A1' });
+  await user.click(casa('inimigo', 'A1'));
+  expect(casa('inimigo', 'A1')).toHaveAttribute('data-estado', 'acerto');
+  expect(casa('jogador', 'A1')).toHaveAttribute('data-estado', 'acerto');
+  expect(screen.getByTestId('vez')).toHaveTextContent('Jogador');
+});
