@@ -30,6 +30,7 @@ test('TC-BN-17 derrota revela a frota inimiga', async () => {
 test('TC-BN-18 reiniciar volta ao posicionamento', async () => {
   const user = await abrirJogo(CENARIO);
   for (const coord of CASAS_FROTA_PADRAO) await user.click(casa('inimigo', coord));
+  for (const navio of ['P', 'E', 'S', 'D']) expect(screen.queryByTestId(`navio-${navio}`)).toBeNull(); // frota já posicionada
   await user.click(screen.getByTestId('btn-reiniciar'));
 
   for (const navio of ['P', 'E', 'S', 'D']) {
