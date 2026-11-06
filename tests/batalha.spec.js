@@ -11,3 +11,10 @@ test('TC-BN-10 tiro na água', async () => {
   expect(casa('inimigo', 'J10')).toHaveAttribute('data-estado', 'erro');
   expect(screen.getByTestId('mensagem')).toHaveTextContent('Água');
 });
+
+test('TC-BN-11 tiro acerta um navio', async () => {
+  const user = await abrirJogo(CENARIO);
+  await user.click(casa('inimigo', 'A1'));
+  expect(casa('inimigo', 'A1')).toHaveAttribute('data-estado', 'acerto');
+  expect(screen.getByTestId('mensagem')).toHaveTextContent('Fogo!');
+});
