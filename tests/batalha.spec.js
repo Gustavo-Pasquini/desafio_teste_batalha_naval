@@ -39,7 +39,7 @@ test('TC-BN-13 afunda o destroier e reduz os restantes', async () => {
   await user.click(casa('inimigo', 'A7'));
   await user.click(casa('inimigo', 'B7'));
   for (const coord of ['A7', 'B7']) expect(casa('inimigo', coord)).toHaveAttribute('data-estado', 'afundado');
-  expect(screen.getByTestId('mensagem')).toHaveTextContent('Você afundou o Destroier');
+  expect(screen.getByTestId('mensagem')).toHaveTextContent(/^Você afundou o Destroier$/);
   expect(screen.getByTestId('restantes-inimigo')).toHaveTextContent(/^3$/);
 });
 
