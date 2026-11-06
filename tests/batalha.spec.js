@@ -1,7 +1,7 @@
 // Testes da batalha (Breno — B2 a B4). Casos da seção 5 do PLANEJAMENTO.md.
 // Modo somente testes: o jogo ainda não existe, então estes testes FALHAM de propósito.
 import { test, expect } from 'vitest';
-import { abrirJogo, screen, casa, casasNoEstado, FROTA_PADRAO, TIROS_AGUA } from './helpers.js';
+import { abrirJogo, screen, casa, casasNoEstado, FROTA_PADRAO, TIROS_AGUA, TODAS_AS_CASAS } from './helpers.js';
 
 const CENARIO = { jogador: FROTA_PADRAO, inimigo: FROTA_PADRAO, tiroscpu: TIROS_AGUA };
 
@@ -62,4 +62,14 @@ test('TC-BN-14 computador atira na ordem configurada', async () => {
   await user.click(casa('inimigo', 'J10'));
   expect(casa('jogador', 'A1')).toHaveAttribute('data-estado', 'acerto');
   expect(screen.getByTestId('vez')).toHaveTextContent('Jogador');
+});
+
+test('TC-BN-15 computador não repete tiros aleatórios', async () => {
+  const user = await abrirJogo({ jogador: FROTA_PADRAO, inimigo: FROTA_PADRAO });
+  for (const coord of TODAS_AS_CASAS.slice(0, 40)) {
+    if (/venceu|perdeu/i.test(screen.getByTestId('mensagem').textContent)) break;
+    await user.click(casa('inimigo', coord));
+  }
+  const tiros = casasNoEstado('jogador', 'acerto').length + casasNoEstado('jogador', 'erro').length;
+  expect(tiros).toBe(40);
 });
