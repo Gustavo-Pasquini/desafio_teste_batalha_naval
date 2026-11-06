@@ -56,3 +56,10 @@ test.each([
   expect(screen.getByTestId('mensagem')).toHaveTextContent(`Você afundou o ${nome}`);
   expect(screen.getByTestId('restantes-inimigo')).toHaveTextContent(/^3$/);
 });
+
+test('TC-BN-14 computador atira na ordem configurada', async () => {
+  const user = await abrirJogo({ ...CENARIO, tiroscpu: 'A1' });
+  await user.click(casa('inimigo', 'J10'));
+  expect(casa('jogador', 'A1')).toHaveAttribute('data-estado', 'acerto');
+  expect(screen.getByTestId('vez')).toHaveTextContent('Jogador');
+});
