@@ -227,17 +227,17 @@ Cada integrante é **dono de arquivos de teste diferentes** (coluna "Arquivos").
 | **G1** Setup: `package.json`, `vitest.config.js` (`environment: 'jsdom'`), `js/main.js` vazio, `.gitignore`, `index.html` esqueleto (elementos fixos da seção 3 **vazios**, sem texto nem atributos de estado), `tests/helpers.js` com `abrirJogo(params)`, `FROTA_PADRAO`, `TIROS_AGUA` | `gustavo/g1-setup` | index.html, js/main.js, config, tests/helpers.js | — |
 | **G2** Tabuleiros 10 × 10 e lista de navios | `gustavo/g2-tabuleiros` | tests/posicionamento.spec.js | TC-BN-01, 02, 09 |
 | **G3** Posicionar e girar | `gustavo/g3-posicionar` | tests/posicionamento.spec.js | TC-BN-03, 04, 07 |
-| **G4** Posições inválidas | `gustavo/g4-validacao` | tests/posicionamento.spec.js | TC-BN-05, 06 |
-| **G5** Posicionamento aleatório (jogador e computador) e parâmetros `inimigo`/`jogador` | `gustavo/g5-aleatorio` | tests/posicionamento.spec.js | TC-BN-08, 19 |
+| **G4** Posições inválidas | `gustavo/g4-validacao` | tests/posicionamento.spec.js | TC-BN-05, 06, 20 |
+| **G5** Posicionamento aleatório (jogador e computador) e parâmetros `inimigo`/`jogador` | `gustavo/g5-aleatorio` | tests/posicionamento.spec.js | TC-BN-08, 19, 21 |
 
 ### Breno
 
 | Tarefa | Branch | Arquivos | Casos de teste |
 |---|---|---|---|
 | **B1** CI no GitHub Actions (`npm ci`, `npm run verificar`) + tabela de testes no README | `breno/b1-ci-readme` | .github/workflows, README.md | — |
-| **B2** Tiro: água, acerto e casa repetida | `breno/b2-tiros` | tests/batalha.spec.js | TC-BN-10 a 12 |
-| **B3** Afundar navio e navios restantes | `breno/b3-afundar` | tests/batalha.spec.js | TC-BN-13 |
-| **B4** Vez do computador e tiros sem repetir | `breno/b4-computador` | tests/batalha.spec.js | TC-BN-14, 15 |
+| **B2** Tiro: água, acerto e casa repetida | `breno/b2-tiros` | tests/batalha.spec.js | TC-BN-10 a 12, 24 |
+| **B3** Afundar navio e navios restantes | `breno/b3-afundar` | tests/batalha.spec.js | TC-BN-13, 22 |
+| **B4** Vez do computador e tiros sem repetir | `breno/b4-computador` | tests/batalha.spec.js | TC-BN-14, 15, 23 |
 | **B5** Vitória, derrota e reinício | `breno/b5-fim` | tests/fim-de-jogo.spec.js | TC-BN-16 a 18 |
 
 ## 5. Casos de teste (interface)
@@ -256,6 +256,8 @@ Cada integrante é **dono de arquivos de teste diferentes** (coluna "Arquivos").
 | TC-BN-08 | Aleatório válido | 10 vezes: clicar `btn-aleatorio` | Exatamente 14 casas `navio`; lista vazia; `btn-iniciar` habilitado |
 | TC-BN-09 | Inimigo escondido | `?inimigo=FROTA_PADRAO`; `btn-aleatorio`, `btn-iniciar`; depois um tiro em `inimigo-A1` | Antes do tiro: `vez` = "Jogador" e as 100 casas do inimigo `desconhecido`, inclusive as 14 da frota. O tiro em A1 dá `acerto` (o navio estava lá, escondido) |
 | TC-BN-19 | Parâmetro `jogador` | `?jogador=FROTA_PADRAO` | As 14 casas de `FROTA_PADRAO` = `navio` (e só elas); lista de navios vazia; `vez` = "Jogador" |
+| TC-BN-20 | Sair por baixo e borda exata | `navio-E` vertical em `jogador-A8` (A8–A11); em outro jogo, vertical em `jogador-A7` (A7–A10) | A8: nenhuma casa muda, `mensagem` com "inválida", `navio-E` continua. A7: A7–A10 = `navio` |
+| TC-BN-21 | Frota do computador tem 14 casas | `?jogador=FROTA_PADRAO` e `tiroscpu` = as 86 casas de água da `FROTA_PADRAO`; atirar A1, A2, … até "Você venceu!" | "Você venceu!"; 14 casas do inimigo `afundado`; `restantes-inimigo` = 0 |
 
 ### Breno — batalha e fim de jogo
 
@@ -272,6 +274,9 @@ Todos com `?jogador=FROTA_PADRAO&inimigo=FROTA_PADRAO&tiroscpu=TIROS_AGUA`, salv
 | TC-BN-16 | Vitória | Acertar as 14 casas da frota inimiga | `mensagem` = "Você venceu!"; `restantes-inimigo` = 0; clicar mais casas não faz nada |
 | TC-BN-17 | Derrota | `tiroscpu` = as 14 casas de `FROTA_PADRAO`; jogador atira em 14 casas de água | `mensagem` = "Você perdeu!"; `restantes-jogador` = 0; navios inimigos revelados (`navio`) |
 | TC-BN-18 | Reiniciar | Depois do TC-BN-16, clicar `btn-reiniciar` | Volta à fase 1: lista com 4 navios, tabuleiros zerados, `btn-iniciar` desabilitado |
+| TC-BN-22 | Mensagem de cada navio (parametrizado) | `?jogador=FROTA_PADRAO&inimigo=FROTA_PADRAO&tiroscpu=TIROS_AGUA`; afundar P (A1–E1), E (A3–D3), S (A5–C5) ou D (A7–B7) | "Você afundou o Porta-aviões" / "Encouraçado" / "Submarino" / "Destroier"; `restantes-inimigo` = 3 |
+| TC-BN-23 | Computador atira também depois de acerto | `?jogador=FROTA_PADRAO&inimigo=FROTA_PADRAO&tiroscpu=A1`; clicar `inimigo-A1` (acerto) | `jogador-A1` = `acerto`; `vez` = "Jogador" |
+| TC-BN-24 | Sem tiro antes de Iniciar | Fase 1 (sem parâmetros): clicar `inimigo-A1` | Continua `desconhecido`; nenhuma casa do jogador muda |
 
 ## 6. Fluxo de trabalho no Git
 
