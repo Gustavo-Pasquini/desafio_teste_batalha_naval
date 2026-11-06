@@ -25,7 +25,7 @@ test('TC-BN-02 lista da frota com os tamanhos e Iniciar desabilitado', async () 
   const tamanhos = { P: '5', E: '4', S: '3', D: '2' };
   for (const [navio, tamanho] of Object.entries(tamanhos)) {
     expect(screen.getByTestId(`navio-${navio}`)).toBeVisible();
-    expect(screen.getByTestId(`navio-${navio}`)).toHaveTextContent(tamanho);
+    expect(screen.getByTestId(`navio-${navio}`)).toHaveTextContent(new RegExp(`\\b${tamanho}\\b`)); // "2", não "12"
   }
   expect(screen.getByTestId('btn-iniciar')).toBeDisabled();
 });
