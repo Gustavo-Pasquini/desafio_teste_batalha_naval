@@ -40,3 +40,34 @@ test('TC-BN-09 navios do inimigo ficam escondidos', async () => {
   await user.click(casa('inimigo', 'A1'));
   expect(casa('inimigo', 'A1')).toHaveAttribute('data-estado', 'acerto'); // o navio estava lá, escondido
 });
+
+test('TC-BN-03 porta-aviões na horizontal ocupa A1 a E1', async () => {
+  const user = await abrirJogo();
+  await posicionar(user, 'P', 'A1');
+  for (const c of ['A1', 'B1', 'C1', 'D1', 'E1']) expect(casa('jogador', c)).toHaveAttribute('data-estado', 'navio');
+  expect(casa('jogador', 'F1')).toHaveAttribute('data-estado', 'agua');
+  expect(screen.queryByTestId('navio-P')).toBeNull(); // saiu da lista
+});
+
+test('TC-BN-04 girar para vertical: encouraçado em J1 ocupa J1 a J4', async () => {
+  const user = await abrirJogo();
+  expect(screen.getByTestId('orientacao')).toHaveTextContent('Horizontal');
+  await user.click(screen.getByTestId('navio-E'));
+  await user.click(screen.getByTestId('btn-girar'));
+  expect(screen.getByTestId('orientacao')).toHaveTextContent('Vertical');
+  await user.click(casa('jogador', 'J1'));
+  for (const c of ['J1', 'J2', 'J3', 'J4']) expect(casa('jogador', c)).toHaveAttribute('data-estado', 'navio');
+  expect(casa('jogador', 'J5')).toHaveAttribute('data-estado', 'agua');
+});
+
+test('TC-BN-07 Iniciar só habilita com os 4 navios', async () => {
+  const user = await abrirJogo();
+  await posicionar(user, 'P', 'A1');
+  await posicionar(user, 'E', 'A3');
+  await posicionar(user, 'S', 'A5');
+  expect(casasNoEstado('jogador', 'navio')).toHaveLength(12);
+  expect(screen.getByTestId('btn-iniciar')).toBeDisabled();
+  await posicionar(user, 'D', 'A7');
+  expect(casasNoEstado('jogador', 'navio')).toHaveLength(14);
+  expect(screen.getByTestId('btn-iniciar')).toBeEnabled();
+});
