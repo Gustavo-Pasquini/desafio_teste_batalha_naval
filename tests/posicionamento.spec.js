@@ -110,3 +110,13 @@ test('TC-BN-06 navio sobreposto é recusado', async () => {
   expect(screen.getByTestId('mensagem')).toHaveTextContent(/inválida/i);
   expect(screen.getByTestId('navio-E')).toBeInTheDocument();
 });
+
+test('TC-BN-08 posicionamento aleatório válido (10 vezes)', async () => {
+  for (let i = 0; i < 10; i++) {
+    const user = await abrirJogo();
+    await user.click(screen.getByTestId('btn-aleatorio'));
+    expect(casasNoEstado('jogador', 'navio')).toHaveLength(14); // 5 + 4 + 3 + 2, sem sobreposição
+    for (const navio of ['P', 'E', 'S', 'D']) expect(screen.queryByTestId(`navio-${navio}`)).toBeNull();
+    expect(screen.getByTestId('btn-iniciar')).toBeEnabled();
+  }
+});
