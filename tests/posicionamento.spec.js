@@ -1,7 +1,7 @@
 // Testes dos tabuleiros e do posicionamento da frota (Gustavo — G2 a G5). Casos da seção 5 do PLANEJAMENTO.md.
 // Modo somente testes: o jogo ainda não existe, então estes testes FALHAM de propósito.
 import { test, expect } from 'vitest';
-import { abrirJogo, screen, within, casa, casasDe, casasNoEstado, LETRAS, FROTA_PADRAO, CASAS_FROTA_PADRAO } from './helpers.js';
+import { abrirJogo, screen, within, casa, casasDe, casasNoEstado, LETRAS, FROTA_PADRAO, CASAS_FROTA_PADRAO, TODAS_AS_CASAS } from './helpers.js';
 
 /** Escolhe o navio na lista e clica na casa inicial do tabuleiro do jogador. */
 async function posicionar(user, navio, coord) {
@@ -127,4 +127,18 @@ test('TC-BN-19 parâmetro jogador posiciona a frota e começa a batalha', async 
   expect(casasNoEstado('jogador', 'navio')).toHaveLength(14); // e só elas
   for (const navio of ['P', 'E', 'S', 'D']) expect(screen.queryByTestId(`navio-${navio}`)).toBeNull();
   expect(screen.getByTestId('vez')).toHaveTextContent('Jogador');
+});
+
+// As 86 casas de água da FROTA_PADRAO: o computador só atira nelas e nunca acerta o jogador.
+const AGUA_FROTA_PADRAO = TODAS_AS_CASAS.filter((c) => !CASAS_FROTA_PADRAO.includes(c)).join(',');
+
+test('TC-BN-21 a frota do computador tem 14 casas', async () => {
+  const user = await abrirJogo({ jogador: FROTA_PADRAO, tiroscpu: AGUA_FROTA_PADRAO });
+  for (const c of TODAS_AS_CASAS) {
+    if (/Você venceu/.test(screen.getByTestId('mensagem').textContent)) break;
+    await user.click(casa('inimigo', c));
+  }
+  expect(screen.getByTestId('mensagem')).toHaveTextContent('Você venceu!');
+  expect(casasNoEstado('inimigo', 'afundado')).toHaveLength(14);
+  expect(screen.getByTestId('restantes-inimigo')).toHaveTextContent(/^0$/);
 });
