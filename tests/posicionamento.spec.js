@@ -120,3 +120,11 @@ test('TC-BN-08 posicionamento aleatório válido (10 vezes)', async () => {
     expect(screen.getByTestId('btn-iniciar')).toBeEnabled();
   }
 });
+
+test('TC-BN-19 parâmetro jogador posiciona a frota e começa a batalha', async () => {
+  await abrirJogo({ jogador: FROTA_PADRAO });
+  for (const c of CASAS_FROTA_PADRAO) expect(casa('jogador', c)).toHaveAttribute('data-estado', 'navio');
+  expect(casasNoEstado('jogador', 'navio')).toHaveLength(14); // e só elas
+  for (const navio of ['P', 'E', 'S', 'D']) expect(screen.queryByTestId(`navio-${navio}`)).toBeNull();
+  expect(screen.getByTestId('vez')).toHaveTextContent('Jogador');
+});
