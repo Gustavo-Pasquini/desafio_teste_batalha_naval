@@ -59,3 +59,15 @@ test('TC-BN-04 girar para vertical: encouraçado em J1 ocupa J1 a J4', async () 
   for (const c of ['J1', 'J2', 'J3', 'J4']) expect(casa('jogador', c)).toHaveAttribute('data-estado', 'navio');
   expect(casa('jogador', 'J5')).toHaveAttribute('data-estado', 'agua');
 });
+
+test('TC-BN-07 Iniciar só habilita com os 4 navios', async () => {
+  const user = await abrirJogo();
+  await posicionar(user, 'P', 'A1');
+  await posicionar(user, 'E', 'A3');
+  await posicionar(user, 'S', 'A5');
+  expect(casasNoEstado('jogador', 'navio')).toHaveLength(12);
+  expect(screen.getByTestId('btn-iniciar')).toBeDisabled();
+  await posicionar(user, 'D', 'A7');
+  expect(casasNoEstado('jogador', 'navio')).toHaveLength(14);
+  expect(screen.getByTestId('btn-iniciar')).toBeEnabled();
+});
