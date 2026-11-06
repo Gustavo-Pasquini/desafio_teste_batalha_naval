@@ -14,8 +14,9 @@ test('TC-BN-01 dois tabuleiros 10 × 10 com rótulos A–J e 1–10', async () =
   for (const lado of ['jogador', 'inimigo']) {
     expect(casasDe(lado)).toHaveLength(100);
     const tabuleiro = within(screen.getByTestId(`tabuleiro-${lado}`));
-    for (const letra of LETRAS) expect(tabuleiro.getAllByText(letra, { exact: true }).length).toBeGreaterThan(0);
-    for (let n = 1; n <= 10; n++) expect(tabuleiro.getAllByText(String(n), { exact: true }).length).toBeGreaterThan(0);
+    for (const rotulo of [...LETRAS, ...Array.from({ length: 10 }, (_, i) => String(i + 1))]) {
+      expect(tabuleiro.getAllByText(rotulo, { exact: true })[0]).toBeVisible();
+    }
   }
 });
 
