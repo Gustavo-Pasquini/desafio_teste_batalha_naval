@@ -43,3 +43,16 @@ test('TC-BN-13 afunda o destroier e reduz os restantes', async () => {
   expect(screen.getByTestId('mensagem')).toHaveTextContent('Você afundou o Destroier');
   expect(screen.getByTestId('restantes-inimigo')).toHaveTextContent(/^3$/);
 });
+
+test.each([
+  ['Porta-aviões', ['A1', 'B1', 'C1', 'D1', 'E1']],
+  ['Encouraçado', ['A3', 'B3', 'C3', 'D3']],
+  ['Submarino', ['A5', 'B5', 'C5']],
+  ['Destroier', ['A7', 'B7']],
+])('TC-BN-22 afundar o %s identifica o navio', async (nome, coordenadas) => {
+  const user = await abrirJogo(CENARIO);
+  for (const coord of coordenadas) await user.click(casa('inimigo', coord));
+  for (const coord of coordenadas) expect(casa('inimigo', coord)).toHaveAttribute('data-estado', 'afundado');
+  expect(screen.getByTestId('mensagem')).toHaveTextContent(`Você afundou o ${nome}`);
+  expect(screen.getByTestId('restantes-inimigo')).toHaveTextContent(/^3$/);
+});
