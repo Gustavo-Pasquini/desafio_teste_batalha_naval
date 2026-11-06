@@ -28,3 +28,10 @@ test('TC-BN-02 lista da frota com os tamanhos e Iniciar desabilitado', async () 
   }
   expect(screen.getByTestId('btn-iniciar')).toBeDisabled();
 });
+
+test('TC-BN-09 navios do inimigo ficam escondidos', async () => {
+  const user = await abrirJogo();
+  await user.click(screen.getByTestId('btn-aleatorio'));
+  await user.click(screen.getByTestId('btn-iniciar'));
+  expect(casasNoEstado('inimigo', 'desconhecido')).toHaveLength(100);
+});
