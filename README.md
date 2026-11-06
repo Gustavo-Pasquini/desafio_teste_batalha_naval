@@ -42,4 +42,10 @@ O projeto está preparado para **Claude Code** e **Codex**. Os dois escrevem os 
 - Claude Code: `/tdd G2` · Codex: `$tdd G2` · depois, "go" escreve o próximo caso de teste.
 - Detalhes, técnicas e fontes: [docs/TDD-COM-IA.md](docs/TDD-COM-IA.md).
 
-> Status: em planejamento. A tabela "ID → arquivo → o que verifica" será preenchida aqui conforme os testes forem escritos (tarefa B1).
+## Rastreabilidade dos testes
+
+| IDs | Arquivo | O que verifica |
+|---|---|---|
+| TC-BN-01–09, 19–21 | `tests/posicionamento.spec.js` | Tabuleiros, posicionamento, validação, aleatoriedade e parâmetros de frota |
+| TC-BN-10–15, 22–24 | `tests/batalha.spec.js` | Tiros, acertos, navios afundados e turno do computador |
+| TC-BN-16–18 | `tests/fim-de-jogo.spec.js` | Vitória, derrota e reinício |
