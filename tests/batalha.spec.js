@@ -26,3 +26,11 @@ test('TC-BN-12 repetir tiro não consome outro turno', async () => {
   expect(casa('inimigo', 'J10')).toHaveAttribute('data-estado', 'erro');
   expect(casasNoEstado('jogador', 'erro')).toHaveLength(1);
 });
+
+test('TC-BN-24 não permite atirar durante o posicionamento', async () => {
+  const user = await abrirJogo();
+  await user.click(casa('inimigo', 'A1'));
+  expect(casa('inimigo', 'A1')).toHaveAttribute('data-estado', 'desconhecido');
+  expect(casasNoEstado('jogador', 'acerto')).toHaveLength(0);
+  expect(casasNoEstado('jogador', 'erro')).toHaveLength(0);
+});
