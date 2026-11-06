@@ -52,7 +52,7 @@ test.each([
   const user = await abrirJogo(CENARIO);
   for (const coord of coordenadas) await user.click(casa('inimigo', coord));
   for (const coord of coordenadas) expect(casa('inimigo', coord)).toHaveAttribute('data-estado', 'afundado');
-  expect(screen.getByTestId('mensagem')).toHaveTextContent(`Você afundou o ${nome}`);
+  expect(screen.getByTestId('mensagem')).toHaveTextContent(new RegExp(`^Você afundou o ${nome}$`));
   expect(screen.getByTestId('restantes-inimigo')).toHaveTextContent(/^3$/);
 });
 
