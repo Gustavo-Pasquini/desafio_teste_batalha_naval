@@ -31,31 +31,71 @@ Batalha naval em tabuleiro **10 × 10**, jogador contra o computador, jogável n
 
 | Item | Escolha |
 |---|---|
-| Jogo | HTML + CSS + JavaScript puro (ES Modules), sem framework |
-| Testes de interface | [Playwright Test](https://playwright.dev) (`@playwright/test`), escritos em JavaScript |
-| Servidor local | `http-server`, iniciado automaticamente pelo Playwright (`webServer` no `playwright.config.js`) |
+| Jogo | HTML + CSS + JavaScript puro (ES Modules), sem framework. Ponto de entrada: `js/main.js` |
+| Executor dos testes | [Vitest](https://vitest.dev) |
+| Testes de interface | [Testing Library](https://testing-library.com) (`@testing-library/dom` + `@testing-library/user-event` + `@testing-library/jest-dom`), em JavaScript |
+| "Navegador" dos testes | [jsdom](https://github.com/jsdom/jsdom) (`environment: 'jsdom'` no `vitest.config.js`). Não precisa baixar navegador |
+| Servidor para jogar | `http-server` (`npm start`) |
 | Node | 18 ou superior |
-| Navegador dos testes | Chromium (headless) |
-| CI | GitHub Actions rodando `npm test` em todo push e Pull Request |
+| CI | GitHub Actions rodando `npm ci` e `npm test` em todo push e Pull Request |
+
+Dependências de desenvolvimento (tarefa G1): `vitest`, `@vitest/ui`, `jsdom`, `@testing-library/dom`, `@testing-library/user-event`, `@testing-library/jest-dom`, `http-server`.
 
 Comandos que o projeto deve ter (criados na tarefa G1):
 
 ```bash
-npm install                    # instala dependências
-npx playwright install chromium  # baixa o navegador dos testes (1ª vez)
-npm start                      # abre o jogo em http://localhost:8080
-npm test                       # roda todos os testes de interface (headless)
-npm run test:ui                # modo interativo do Playwright (ver o teste rodando)
-npm run report                 # abre o relatório HTML da última execução
+npm install          # instala dependências (não baixa navegador)
+npm start            # abre o jogo em http://localhost:8080 para jogar
+npm test             # roda todos os testes uma vez (vitest run)
+npm run test:watch   # roda de novo a cada arquivo salvo (vitest)
+npm run test:ui      # interface visual do Vitest no navegador (vitest --ui)
+```
+
+Como um teste abre o jogo — `tests/helpers.js` (tarefa G1):
+
+```js
+// tests/helpers.js
+import { readFileSync } from 'node:fs';
+import { vi } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom/vitest';
+
+const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+const corpo = html.match(/<body[^>]*>([\s\S]*)<\/body>/)[1];
+
+export async function abrirJogo(params = {}) {
+  window.history.replaceState({}, '', '/?' + new URLSearchParams(params)); // parâmetros da seção 3
+  document.body.innerHTML = corpo;          // mesmo HTML do jogo
+  vi.resetModules();                        // cada teste começa um jogo novo
+  await import('../js/main.js');            // main.js lê location.search e inicia o jogo
+  return userEvent.setup();                 // "user" para clicar como um jogador
+}
+```
+
+Exemplo de caso de teste:
+
+```js
+import { test, expect } from 'vitest';
+import { screen } from '@testing-library/dom';
+import { abrirJogo } from './helpers.js';
+
+test('TC-XX-01 exemplo', async () => {
+  const user = await abrirJogo({ /* parâmetros */ });
+  await user.click(screen.getByTestId('btn-nova-partida'));
+  expect(screen.getByTestId('mensagem')).toHaveTextContent('...');
+});
 ```
 
 Regras para os testes:
 
-- Os testes **só** acessam a página pelo que o usuário vê/clica: `page.getByTestId(...)`, `getByRole(...)`, cliques e teclado. Nada de chamar funções internas do jogo.
+- Os testes **só** acessam o jogo pelo que o usuário vê/clica: `screen.getByTestId(...)`, `getByRole(...)` e `user.click`, `user.dblClick`, `user.pointer(...)`. Nada de chamar funções internas do jogo.
+- Clique direito: `await user.pointer({ keys: '[MouseRight]', target: elemento })`. Clique duplo: `await user.dblClick(elemento)`.
+- O jsdom **não lê CSS**. Para esconder/mostrar algo use o atributo `hidden`; para bloquear botão, `disabled`. Assim `toBeVisible()` e `toBeDisabled()` funcionam.
+- Tempo (cronômetro): `vi.useFakeTimers()` no teste, `userEvent.setup({ advanceTimers: vi.advanceTimersByTime })` e `vi.advanceTimersByTime(2000)` para "esperar" 2 s sem esperar de verdade.
+- `main.js` inicia o jogo assim que é importado e não usa `DOMContentLoaded` (o `index.html` carrega com `<script type="module" src="js/main.js">`, que já roda depois do HTML).
 - Todo elemento que um teste usa tem `data-testid` (lista na seção 3). Se precisar de um novo, adicione na seção 3 no mesmo PR.
 - Aleatoriedade é controlada por **parâmetros de URL** (seção 3). Um teste nunca depende de sorte.
-- O helper `tests/helpers.js` (tarefa G1) exporta `abrirJogo(page, params)` que monta a URL com os parâmetros e abre a página. Todos os testes usam esse helper.
-- Cada caso de teste da seção 5 vira um `test('TC-XX-NN ...')` com o **mesmo ID no título**, para ser rastreável no relatório.
+- Cada caso de teste da seção 5 vira um `test('TC-XX-NN ...')` com o **mesmo ID no título**, para ser rastreável na saída do Vitest.
 
 Estrutura de pastas e dono de cada arquivo:
 
@@ -63,6 +103,7 @@ Estrutura de pastas e dono de cada arquivo:
 desafio_teste_batalha_naval/
 ├── index.html              G1
 ├── css/estilo.css          G1 (cada um estiliza a própria parte)
+├── js/main.js              G1  ponto de entrada: lê a URL e inicia o jogo
 ├── js/tabuleiro.js         Gustavo  grade 10 × 10, coordenadas, validar posição
 ├── js/frota.js             Gustavo  navios, posicionar, girar, aleatório
 ├── js/ui-posicionamento.js Gustavo  desenha tabuleiros e a lista de navios
@@ -74,7 +115,7 @@ desafio_teste_batalha_naval/
 ├── tests/batalha.spec.js        Breno
 ├── tests/fim-de-jogo.spec.js    Breno
 ├── .github/workflows/testes.yml Breno
-├── playwright.config.js    G1
+├── vitest.config.js        G1
 └── package.json            G1
 ```
 
@@ -135,7 +176,7 @@ Cada integrante é **dono de arquivos diferentes** (coluna "Arquivos"). Assim, d
 
 | Tarefa | Branch | Arquivos | Casos de teste |
 |---|---|---|---|
-| **G1** Setup: `package.json`, `playwright.config.js` (webServer na porta 8080), `.gitignore`, `index.html` com os `data-testid` da seção 3, `tests/helpers.js` com `abrirJogo(page, params)`, `FROTA_PADRAO`, `TIROS_AGUA`, e um teste "a página abre" | `gustavo/g1-setup` | index.html, css, config, helpers | — |
+| **G1** Setup: `package.json`, `vitest.config.js` (`environment: 'jsdom'`), `js/main.js`, `.gitignore`, `index.html` com os `data-testid` da seção 3, `tests/helpers.js` com `abrirJogo(params)`, `FROTA_PADRAO`, `TIROS_AGUA`, e um teste "a página abre" | `gustavo/g1-setup` | index.html, css, config, helpers | — |
 | **G2** Tabuleiros 10 × 10 e lista de navios | `gustavo/g2-tabuleiros` | tabuleiro.js, ui-posicionamento.js | TC-BN-01, 02, 09 |
 | **G3** Posicionar e girar | `gustavo/g3-posicionar` | frota.js | TC-BN-03, 04, 07 |
 | **G4** Posições inválidas | `gustavo/g4-validacao` | tabuleiro.js | TC-BN-05, 06 |
@@ -145,7 +186,7 @@ Cada integrante é **dono de arquivos diferentes** (coluna "Arquivos"). Assim, d
 
 | Tarefa | Branch | Arquivos | Casos de teste |
 |---|---|---|---|
-| **B1** CI no GitHub Actions + tabela de testes no README | `breno/b1-ci-readme` | .github/workflows, README.md | — |
+| **B1** CI no GitHub Actions (`npm ci`, `npm test`) + tabela de testes no README | `breno/b1-ci-readme` | .github/workflows, README.md | — |
 | **B2** Tiro: água, acerto e casa repetida | `breno/b2-tiros` | batalha.js, ui-batalha.js | TC-BN-10 a 12 |
 | **B3** Afundar navio e navios restantes | `breno/b3-afundar` | batalha.js | TC-BN-13 |
 | **B4** Vez do computador e tiros sem repetir | `breno/b4-computador` | computador.js | TC-BN-14, 15 |
