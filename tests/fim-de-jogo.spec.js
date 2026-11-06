@@ -8,11 +8,15 @@ const CENARIO = { jogador: FROTA_PADRAO, inimigo: FROTA_PADRAO, tiroscpu: TIROS_
 test('TC-BN-16 vitória encerra a partida', async () => {
   const user = await abrirJogo(CENARIO);
   for (const coord of CASAS_FROTA_PADRAO) await user.click(casa('inimigo', coord));
-  expect(screen.getByTestId('mensagem')).toHaveTextContent('Você venceu!');
+  expect(screen.getByTestId('mensagem')).toHaveTextContent(/^Você venceu!$/);
   expect(screen.getByTestId('restantes-inimigo')).toHaveTextContent(/^0$/);
+  const atingidasNoJogador = () => ['acerto', 'erro', 'afundado'].reduce((n, estado) => n + casasNoEstado('jogador', estado).length, 0);
+  const tirosDoComputador = atingidasNoJogador();
   const antes = casa('inimigo', 'J10').getAttribute('data-estado');
   await user.click(casa('inimigo', 'J10'));
   expect(casa('inimigo', 'J10')).toHaveAttribute('data-estado', antes);
+  expect(atingidasNoJogador()).toBe(tirosDoComputador); // o computador também não joga mais
+  expect(screen.getByTestId('mensagem')).toHaveTextContent(/^Você venceu!$/);
 });
 
 test('TC-BN-17 derrota revela a frota inimiga', async () => {
