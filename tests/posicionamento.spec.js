@@ -48,3 +48,14 @@ test('TC-BN-03 porta-aviões na horizontal ocupa A1 a E1', async () => {
   expect(casa('jogador', 'F1')).toHaveAttribute('data-estado', 'agua');
   expect(screen.queryByTestId('navio-P')).toBeNull(); // saiu da lista
 });
+
+test('TC-BN-04 girar para vertical: encouraçado em J1 ocupa J1 a J4', async () => {
+  const user = await abrirJogo();
+  expect(screen.getByTestId('orientacao')).toHaveTextContent('Horizontal');
+  await user.click(screen.getByTestId('navio-E'));
+  await user.click(screen.getByTestId('btn-girar'));
+  expect(screen.getByTestId('orientacao')).toHaveTextContent('Vertical');
+  await user.click(casa('jogador', 'J1'));
+  for (const c of ['J1', 'J2', 'J3', 'J4']) expect(casa('jogador', c)).toHaveAttribute('data-estado', 'navio');
+  expect(casa('jogador', 'J5')).toHaveAttribute('data-estado', 'agua');
+});
