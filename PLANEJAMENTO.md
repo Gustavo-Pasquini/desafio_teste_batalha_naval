@@ -228,7 +228,7 @@ Cada integrante é **dono de arquivos de teste diferentes** (coluna "Arquivos").
 | **G2** Tabuleiros 10 × 10 e lista de navios | `gustavo/g2-tabuleiros` | tests/posicionamento.spec.js | TC-BN-01, 02, 09 |
 | **G3** Posicionar e girar | `gustavo/g3-posicionar` | tests/posicionamento.spec.js | TC-BN-03, 04, 07 |
 | **G4** Posições inválidas | `gustavo/g4-validacao` | tests/posicionamento.spec.js | TC-BN-05, 06 |
-| **G5** Posicionamento aleatório (jogador e computador) e parâmetros `inimigo`/`jogador` | `gustavo/g5-aleatorio` | tests/posicionamento.spec.js | TC-BN-08 |
+| **G5** Posicionamento aleatório (jogador e computador) e parâmetros `inimigo`/`jogador` | `gustavo/g5-aleatorio` | tests/posicionamento.spec.js | TC-BN-08, 19 |
 
 ### Breno
 
@@ -254,7 +254,8 @@ Cada integrante é **dono de arquivos de teste diferentes** (coluna "Arquivos").
 | TC-BN-06 | Sobreposição | P horizontal em A1; depois `navio-E` vertical em `jogador-C1` | E não é colocado (C1–C4 sem mudança além do P); aviso em `mensagem` |
 | TC-BN-07 | Iniciar só com a frota completa | Posicionar 3 navios → conferir; posicionar o 4º → conferir | `btn-iniciar` desabilitado com 3; habilitado com 4 |
 | TC-BN-08 | Aleatório válido | 10 vezes: clicar `btn-aleatorio` | Exatamente 14 casas `navio`; lista vazia; `btn-iniciar` habilitado |
-| TC-BN-09 | Inimigo escondido | `btn-aleatorio`, `btn-iniciar` | As 100 casas do inimigo com `data-estado="desconhecido"` |
+| TC-BN-09 | Inimigo escondido | `?inimigo=FROTA_PADRAO`; `btn-aleatorio`, `btn-iniciar`; depois um tiro em `inimigo-A1` | Antes do tiro: `vez` = "Jogador" e as 100 casas do inimigo `desconhecido`, inclusive as 14 da frota. O tiro em A1 dá `acerto` (o navio estava lá, escondido) |
+| TC-BN-19 | Parâmetro `jogador` | `?jogador=FROTA_PADRAO` | As 14 casas de `FROTA_PADRAO` = `navio` (e só elas); lista de navios vazia; `vez` = "Jogador" |
 
 ### Breno — batalha e fim de jogo
 
