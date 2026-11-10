@@ -1,6 +1,5 @@
 // Testes dos tabuleiros e do posicionamento da frota (Gustavo — G2 a G5). Casos da seção 5 do PLANEJAMENTO.md.
 // Modo somente testes: o jogo ainda não existe, então estes testes FALHAM de propósito.
-import { test, expect } from 'vitest';
 import { abrirJogo, screen, within, casa, casasDe, casasNoEstado, LETRAS, FROTA_PADRAO, CASAS_FROTA_PADRAO, TODAS_AS_CASAS } from './helpers.js';
 
 /** Escolhe o navio na lista e clica na casa inicial do tabuleiro do jogador. */
