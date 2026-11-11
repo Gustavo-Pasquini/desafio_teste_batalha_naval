@@ -46,3 +46,9 @@ test('TC-BN-26 o computador segue caçando até afundar o navio', async () => {
   }
   for (const c of PORTA_AVIOES) expect(casa('jogador', c)).toHaveAttribute('data-estado', 'afundado');
 });
+
+test('TC-BN-27 acerto na borda: o tiro seguinte fica dentro do tabuleiro', async () => {
+  const user = await abrirJogo({ ...CENARIO, tiroscpu: 'A7' });
+  expect(await rodada(user, AGUA[0])).toBe('A7');
+  expect(['A6', 'A8', 'B7']).toContain(await rodada(user, AGUA[1]));
+});
