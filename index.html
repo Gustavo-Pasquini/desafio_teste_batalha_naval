@@ -4,33 +4,42 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Batalha naval</title>
+  <link rel="stylesheet" href="css/estilo.css">
 </head>
 <body>
   <!--
     ESQUELETO DA TELA (contrato da seção 3 do PLANEJAMENTO.md).
     Elementos fixos, VAZIOS: sem texto, sem valor e sem atributos de estado
     (data-estado, disabled, hidden). Os testes abrem este HTML.
-    Fase GREEN desativada: o jogo (js/) ainda não existe.
+    O jogo (js/main.js) preenche esses elementos ao abrir a página.
   -->
-  <section>
+  <h1>Batalha naval</h1>
+  <section class="controles">
+    <h2>Seus navios</h2>
     <button data-testid="navio-P"></button>
     <button data-testid="navio-E"></button>
     <button data-testid="navio-S"></button>
     <button data-testid="navio-D"></button>
     <button data-testid="btn-girar"></button>
-    <span data-testid="orientacao"></span>
+    <span class="rotulo-orientacao">Orientação: <span data-testid="orientacao"></span></span>
     <button data-testid="btn-aleatorio"></button>
     <button data-testid="btn-iniciar"></button>
     <button data-testid="btn-reiniciar"></button>
   </section>
   <main>
-    <div data-testid="tabuleiro-jogador"></div>
-    <div data-testid="tabuleiro-inimigo"></div>
+    <div class="lado">
+      <h2>Seu tabuleiro</h2>
+      <div data-testid="tabuleiro-jogador"></div>
+    </div>
+    <div class="lado">
+      <h2>Tabuleiro inimigo</h2>
+      <div data-testid="tabuleiro-inimigo"></div>
+    </div>
   </main>
   <footer>
-    <span data-testid="vez"></span>
-    <span data-testid="restantes-jogador"></span>
-    <span data-testid="restantes-inimigo"></span>
+    <span>Vez: <span data-testid="vez"></span></span>
+    <span>Seus navios restantes: <span data-testid="restantes-jogador"></span></span>
+    <span>Navios inimigos restantes: <span data-testid="restantes-inimigo"></span></span>
     <p data-testid="mensagem"></p>
   </footer>
   <script type="module" src="js/main.js"></script>

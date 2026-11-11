@@ -1,0 +1,108 @@
+/* Batalha naval: dois tabuleiros 10 × 10 com rótulos e cores de água, navio, acerto, erro e afundado. */
+:root {
+  --fundo: #f4f7fb;
+  --texto: #1b2533;
+  --borda: #9fb3c8;
+  --agua: #cfe6fb;
+  --desconhecido: #e3ecf5;
+  --navio: #5b6b7d;
+  --erro: #8fb6dc;
+  --acerto: #e8590c;
+  --afundado: #9b1c1c;
+  --destaque: #1c64d1;
+  --casa: 2rem;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 1rem;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background: var(--fundo);
+  color: var(--texto);
+}
+
+h1 { margin: 0 0 1rem; font-size: 1.6rem; }
+h2 { margin: 0 0 0.5rem; font-size: 1.1rem; }
+
+.controles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.controles h2 { width: 100%; }
+
+button {
+  font: inherit;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--borda);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--texto);
+  cursor: pointer;
+}
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+button[aria-pressed='true'] { background: var(--destaque); border-color: var(--destaque); color: #fff; }
+
+main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+[data-testid^='tabuleiro-'] {
+  display: grid;
+  grid-template-columns: repeat(11, var(--casa));
+  grid-auto-rows: var(--casa);
+  gap: 2px;
+}
+
+.rotulo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.casa {
+  padding: 0;
+  border: 1px solid var(--borda);
+  border-radius: 3px;
+  background: var(--agua);
+  cursor: default;
+  position: relative;
+}
+.casa[data-estado='desconhecido'] { background: var(--desconhecido); cursor: crosshair; }
+.casa[data-estado='desconhecido']:hover { outline: 2px solid var(--destaque); }
+.casa[data-estado='navio'] { background: var(--navio); }
+.casa[data-estado='erro'] { background: var(--erro); }
+.casa[data-estado='acerto'] { background: var(--acerto); }
+.casa[data-estado='afundado'] { background: var(--afundado); }
+/* Marcas além da cor: • na água atingida, ✕ no acerto e no afundado. */
+.casa[data-estado='erro']::after { content: '•'; color: #fff; }
+.casa[data-estado='acerto']::after,
+.casa[data-estado='afundado']::after { content: '✕'; color: #fff; font-weight: 700; }
+
+[data-testid='tabuleiro-jogador'] .casa[data-estado='agua'] { cursor: pointer; }
+
+footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  margin-top: 1.5rem;
+}
+[data-testid='mensagem'] {
+  width: 100%;
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  min-height: 1.5em;
+}
+
+@media (max-width: 480px) {
+  :root { --casa: 1.6rem; }
+}
