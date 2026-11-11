@@ -26,6 +26,7 @@ Batalha naval em tabuleiro **10 × 10**, jogador contra o computador: **casos de
 - **Fase 2 — batalha:** o jogador clica numa casa do tabuleiro inimigo → **Água** ou **Fogo!** (acerto). Quando todas as casas de um navio são atingidas: "Você afundou o *Nome*". Depois de cada tiro do jogador, o computador atira uma vez no tabuleiro do jogador (a vez sempre alterna).
 - Não se atira duas vezes na mesma casa (nem o jogador, nem o computador).
 - **Fim:** vence quem afundar os 4 navios do outro primeiro. Ao perder, os navios inimigos que sobraram são revelados. **Reiniciar** volta para a fase 1.
+- **Computador caça:** depois de acertar um navio, o computador atira numa das 4 casas vizinhas (cima, baixo, esquerda, direita) de um acerto desse navio ainda não afundado, até afundá-lo; depois volta a sortear. Vale também quando a lista `tiroscpu` acaba.
 
 ## 2. Stack, comandos e estrutura
 
@@ -229,6 +230,7 @@ Cada integrante é **dono de arquivos de teste diferentes** (coluna "Arquivos").
 | **G3** Posicionar e girar | `gustavo/g3-posicionar` | tests/posicionamento.spec.js | TC-BN-03, 04, 07 |
 | **G4** Posições inválidas | `gustavo/g4-validacao` | tests/posicionamento.spec.js | TC-BN-05, 06, 20 |
 | **G5** Posicionamento aleatório (jogador e computador) e parâmetros `inimigo`/`jogador` | `gustavo/g5-aleatorio` | tests/posicionamento.spec.js | TC-BN-08, 19, 21 |
+| **G6** Computador caça depois de acertar | `gustavo/g6-caca` | tests/cpu-caca.spec.js | TC-BN-25 a 27 |
 
 ### Breno
 
@@ -258,6 +260,9 @@ Cada integrante é **dono de arquivos de teste diferentes** (coluna "Arquivos").
 | TC-BN-19 | Parâmetro `jogador` | `?jogador=FROTA_PADRAO` | As 14 casas de `FROTA_PADRAO` = `navio` (e só elas); lista de navios vazia; `vez` = "Jogador" |
 | TC-BN-20 | Sair por baixo e borda exata | `navio-E` vertical em `jogador-A8` (A8–A11); em outro jogo, vertical em `jogador-A7` (A7–A10) | A8: nenhuma casa muda, `mensagem` com "inválida", `navio-E` continua. A7: A7–A10 = `navio` |
 | TC-BN-21 | Frota do computador tem 14 casas | `?jogador=FROTA_PADRAO` e `tiroscpu` = as 86 casas de água da `FROTA_PADRAO`; atirar A1, A2, … até "Você venceu!" | "Você venceu!"; 14 casas do inimigo `afundado`; `restantes-inimigo` = 0 |
+| TC-BN-25 | Tiro em volta do acerto | `?jogador=FROTA_PADRAO&inimigo=FROTA_PADRAO&tiroscpu=C1`; o jogador atira na água 2 vezes | 1º tiro do computador = C1 (`acerto`); o 2º é B1, D1 ou C2 |
+| TC-BN-26 | Até fechar o navio | Mesmo cenário, jogando até o porta-aviões afundar | Até afundar, cada tiro do computador é vizinho de um acerto no porta-aviões; afunda em no máximo 12 tiros depois do primeiro |
+| TC-BN-27 | Acerto na borda | `tiroscpu=A7` (ponta do destroier) | O 2º tiro é A6, A8 ou B7 |
 
 ### Breno — batalha e fim de jogo
 
